@@ -1,8 +1,10 @@
 import React, {useState} from 'react';
-import {Cell, Column, Row, TableBody, TableHeader, TableView} from "@adobe/react-spectrum";
+import {Cell, Column, Row, TableBody, TableHeader, TableView, useAsyncList, useCollator} from "@adobe/react-spectrum";
 import students from '../data/students.json';
 
 export default function StudentsTable() {
+    let collator = useCollator({numeric: true});
+
     const [currentPage, setCurrentPage] = useState(1);
     const rowsPerPage = 10
     const totalPages = Math.ceil(students.length / rowsPerPage);
@@ -14,32 +16,51 @@ export default function StudentsTable() {
         console.log(`active page is ${pageNumber}`);
         setCurrentPage(pageNumber);
     }
+
+
+    let list = useAsyncList({
+        async load({signal}) {
+            return {
+                items: students
+            };
+        },
+        async sort({items, sortDescriptor}) {
+            return {
+                items: items.sort((a, b) => {
+                    let first = a[sortDescriptor.column];
+                    let second = b[sortDescriptor.column];
+                    let cmp = collator.compare(first, second);
+                    if (sortDescriptor.direction === 'descending') {
+                        cmp *= -1;
+                    }
+                    return cmp;
+                })
+            };
+        }
+    });
+
     return (
         <div>
             <TableView
                 aria-label="Example table with static contents"
+                sortDescriptor={list.sortDescriptor}
+                onSortChange={list.sort}
             >
                 <TableHeader>
-                    <Column>Student Name</Column>
-                    <Column>Course Name</Column>
-                    <Column>Lesson</Column>
-                    <Column>Progress</Column>
+                    <Column key="student_name" allowsSorting>Student Name</Column>
+                    <Column key="course_name">Course Name</Column>
+                    <Column key="lesson_name">Lesson</Column>
+                    <Column key='progress' align='end'>Progress</Column>
                 </TableHeader>
-                <TableBody>
-                    <Row>
-                        <Cell>Games</Cell>
-                        <Cell>File folder</Cell>
-                        <Cell>6/7/2020</Cell>
-                        <Cell>6/7/2020</Cell>
-                    </Row>
-                    {students && students.map((item) => (
+                <TableBody
+                    items={list.items}
+                    loadingState={list.loadingState}
+                >
+                    {(item) => (
                         <Row key={item.id}>
-                            <Cell>{item.student_name}</Cell>
-                            <Cell>{item.course_name}</Cell>
-                            <Cell>{item.lesson_name}</Cell>
-                            <Cell>{item.progress}</Cell>
+                            {(columnKey) => <Cell>{item[columnKey]}</Cell>}
                         </Row>
-                    ))}
+                    )}
                 </TableBody>
             </TableView>
             <nav className="spectrum-Pagination spectrum-Pagination--listing">
@@ -67,7 +88,6 @@ export default function StudentsTable() {
                    className="spectrum-Button spectrum-Button--sizeM spectrum-Button--outline spectrum-Button--primary spectrum-Pagination-nextButton"><span
                     className="spectrum-Button-label">Next</span></a>
             </nav>
-            {/*</div>*/}
         </div>
     );
 };
