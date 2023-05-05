@@ -1,12 +1,11 @@
-import React, {useState} from 'react';
-import {Cell, Column, Row, TableBody, TableHeader, TableView, useAsyncList, useCollator} from "@adobe/react-spectrum";
+import React, { useState } from 'react';
+import { Cell, Column, Row, TableBody, TableHeader, TableView, useAsyncList, useCollator } from '@adobe/react-spectrum';
 import students from '../data/students.json';
-import {Pagination} from "@/components/index";
+import { Pagination } from '@/components/index';
 import styles from '../styles/styles.module.css';
 
-
 export default function StudentsTable() {
-    let collator = useCollator({numeric: true});
+    let collator = useCollator({ numeric: true });
 
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage] = useState(10);
@@ -14,10 +13,10 @@ export default function StudentsTable() {
     let list = useAsyncList({
         async load() {
             return {
-                items: students
+                items: students,
             };
         },
-        async sort({items, sortDescriptor}) {
+        async sort({ items, sortDescriptor }) {
             return {
                 items: items.sort((a, b) => {
                     let first = a[sortDescriptor.column];
@@ -27,9 +26,9 @@ export default function StudentsTable() {
                         cmp *= -1;
                     }
                     return cmp;
-                })
+                }),
             };
-        }
+        },
     });
 
     return (
@@ -40,20 +39,20 @@ export default function StudentsTable() {
                 onSortChange={list.sort}
             >
                 <TableHeader>
-                    <Column key="student_name" allowsSorting>Student Name</Column>
+                    <Column key="student_name" allowsSorting>
+                        Student Name
+                    </Column>
                     <Column key="course_name">Course Name</Column>
                     <Column key="lesson_name">Lesson</Column>
-                    <Column key='progress' align='end'>Progress</Column>
+                    <Column key="progress" align="end">
+                        Progress
+                    </Column>
                 </TableHeader>
                 <TableBody
                     items={list.items.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)}
                     loadingState={list.loadingState}
                 >
-                    {(item) => (
-                        <Row key={item.id}>
-                            {(columnKey) => <Cell>{item[columnKey]}</Cell>}
-                        </Row>
-                    )}
+                    {(item) => <Row key={item.id}>{(columnKey) => <Cell>{item[columnKey]}</Cell>}</Row>}
                 </TableBody>
             </TableView>
             <Pagination
@@ -65,5 +64,4 @@ export default function StudentsTable() {
             />
         </div>
     );
-};
-
+}

@@ -1,9 +1,9 @@
-import {StudentsTable} from "../components";
+import { StudentsTable } from '../components';
 
 export default function Home() {
     return (
         <div>
-            <StudentsTable/>
+            <StudentsTable />
         </div>
-    )
+    );
 }
