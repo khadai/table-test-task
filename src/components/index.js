@@ -1,3 +1,3 @@
 import StudentsTable from "./StudentsTable";
-
-export {StudentsTable};
+import Pagination from "./Pagination";
+export {StudentsTable, Pagination};

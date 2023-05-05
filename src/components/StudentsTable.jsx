@@ -1,12 +1,13 @@
 import React, {useState} from 'react';
 import {Cell, Column, Row, TableBody, TableHeader, TableView, useAsyncList, useCollator} from "@adobe/react-spectrum";
 import students from '../data/students.json';
+import {Pagination} from "@/components/index";
 
 export default function StudentsTable() {
     let collator = useCollator({numeric: true});
 
     const [currentPage, setCurrentPage] = useState(1);
-    const rowsPerPage = 10
+    const [rowsPerPage] = useState(10);
     const totalPages = Math.ceil(students.length / rowsPerPage);
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
@@ -53,7 +54,7 @@ export default function StudentsTable() {
                     <Column key='progress' align='end'>Progress</Column>
                 </TableHeader>
                 <TableBody
-                    items={list.items}
+                    items={list.items.slice((currentPage - 1) * rowsPerPage, currentPage  * rowsPerPage)}
                     loadingState={list.loadingState}
                 >
                     {(item) => (
@@ -63,31 +64,12 @@ export default function StudentsTable() {
                     )}
                 </TableBody>
             </TableView>
-            <nav className="spectrum-Pagination spectrum-Pagination--listing">
-                <a href="#"
-                   className="spectrum-Button spectrum-Button--sizeM spectrum-Button--outline spectrum-Button--primary spectrum-Pagination-prevButton"><span
-                    className="spectrum-Button-label">Prev</span></a>
-                <a href="#" className="spectrum-ActionButton spectrum-ActionButton--sizeM spectrum-ActionButton--quiet"><span
-                    className="spectrum-ActionButton-label">1</span></a>
-                <a href="#"
-                   className="spectrum-ActionButton spectrum-ActionButton--sizeM spectrum-ActionButton--quiet is-selected"><span
-                    className="spectrum-ActionButton-label">2</span></a>
-                <a href="#" className="spectrum-ActionButton spectrum-ActionButton--sizeM spectrum-ActionButton--quiet"><span
-                    className="spectrum-ActionButton-label">3</span></a>
-                <a href="#" className="spectrum-ActionButton spectrum-ActionButton--sizeM spectrum-ActionButton--quiet"><span
-                    className="spectrum-ActionButton-label">4</span></a>
-                <a href="#" className="spectrum-ActionButton spectrum-ActionButton--sizeM spectrum-ActionButton--quiet"><span
-                    className="spectrum-ActionButton-label">5</span></a>
-                <a href="#" className="spectrum-ActionButton spectrum-ActionButton--sizeM spectrum-ActionButton--quiet"><span
-                    className="spectrum-ActionButton-label">6</span></a>
-                <a href="#" className="spectrum-ActionButton spectrum-ActionButton--sizeM spectrum-ActionButton--quiet"><span
-                    className="spectrum-ActionButton-label">...</span></a>
-                <a href="#" className="spectrum-ActionButton spectrum-ActionButton--sizeM spectrum-ActionButton--quiet"><span
-                    className="spectrum-ActionButton-label">24</span></a>
-                <a href="#"
-                   className="spectrum-Button spectrum-Button--sizeM spectrum-Button--outline spectrum-Button--primary spectrum-Pagination-nextButton"><span
-                    className="spectrum-Button-label">Next</span></a>
-            </nav>
+            <Pagination
+                rowsPerPage={rowsPerPage}
+                totalPosts={list.items.length}
+                paginate={(pageNumber) => setCurrentPage(pageNumber)}
+                currentPage={currentPage}
+            />
         </div>
     );
 };
