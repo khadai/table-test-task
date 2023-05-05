@@ -2,25 +2,17 @@ import React, {useState} from 'react';
 import {Cell, Column, Row, TableBody, TableHeader, TableView, useAsyncList, useCollator} from "@adobe/react-spectrum";
 import students from '../data/students.json';
 import {Pagination} from "@/components/index";
+import styles from '../styles/styles.module.css';
+
 
 export default function StudentsTable() {
     let collator = useCollator({numeric: true});
 
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage] = useState(10);
-    const totalPages = Math.ceil(students.length / rowsPerPage);
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-    const slicedData = students.slice(startIndex, endIndex);
-
-    const handlePageChange = (pageNumber) => {
-        console.log(`active page is ${pageNumber}`);
-        setCurrentPage(pageNumber);
-    }
-
 
     let list = useAsyncList({
-        async load({signal}) {
+        async load() {
             return {
                 items: students
             };
@@ -41,9 +33,9 @@ export default function StudentsTable() {
     });
 
     return (
-        <div>
+        <div className={styles.container}>
             <TableView
-                aria-label="Example table with static contents"
+                aria-label="Table with students information"
                 sortDescriptor={list.sortDescriptor}
                 onSortChange={list.sort}
             >
@@ -54,7 +46,7 @@ export default function StudentsTable() {
                     <Column key='progress' align='end'>Progress</Column>
                 </TableHeader>
                 <TableBody
-                    items={list.items.slice((currentPage - 1) * rowsPerPage, currentPage  * rowsPerPage)}
+                    items={list.items.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)}
                     loadingState={list.loadingState}
                 >
                     {(item) => (
@@ -65,6 +57,7 @@ export default function StudentsTable() {
                 </TableBody>
             </TableView>
             <Pagination
+                className={styles.pagination}
                 rowsPerPage={rowsPerPage}
                 totalPosts={list.items.length}
                 paginate={(pageNumber) => setCurrentPage(pageNumber)}

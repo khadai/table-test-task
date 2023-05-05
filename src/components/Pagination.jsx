@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Pagination({rowsPerPage, totalPosts, paginate, currentPage}) {
+export default function Pagination({className, rowsPerPage, totalPosts, paginate, currentPage}) {
     let pageNumbers = [];
 
     for (let i = 1; i <= Math.ceil(totalPosts / rowsPerPage); i++) {
@@ -8,10 +8,11 @@ export default function Pagination({rowsPerPage, totalPosts, paginate, currentPa
     }
 
     return (
-        <nav className="spectrum-Pagination spectrum-Pagination--listing">
+        <nav className={`${className} spectrum-Pagination spectrum-Pagination--listing`}>
             <a
                 href="#"
-                className="spectrum-Button spectrum-Button--sizeM spectrum-Button--outline spectrum-Button--primary spectrum-Pagination-prevButton">
+                className="spectrum-Button spectrum-Button--sizeM spectrum-Button--outline spectrum-Button--primary spectrum-Pagination-prevButton"
+            >
                 <span
                     className="spectrum-Button-label"
                     onClick={() => paginate(currentPage - 1)}
